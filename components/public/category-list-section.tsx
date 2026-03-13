@@ -41,7 +41,7 @@ export default function CategoryListSection({
             {articles.map((article, idx) => (
               <Link
                 key={article.id}
-                href={`/news/${article.slug}`}
+                href={`${article.category?.slug === "policies" ? "/policies" : "/news"}/${article.slug}`}
                 className={`group flex items-center gap-4 ${
                   idx < articles.length - 1 ? "border-b border-border pb-4" : ""
                 }`}

@@ -2,6 +2,7 @@
 export function formatDate(dateStr: string | null): string {
   if (!dateStr) return "";
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "";
   const months = [
     "Thg 1", "Thg 2", "Thg 3", "Thg 4", "Thg 5", "Thg 6",
     "Thg 7", "Thg 8", "Thg 9", "Thg 10", "Thg 11", "Thg 12",

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ArticleWithCategory } from "@/lib/queries/article-queries";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate, estimateReadingTime } from "@/lib/utils/format-date";
 
 /** Category tag color mapping from .pen design */
 const TAG_STYLES: Record<string, string> = {
@@ -17,7 +17,7 @@ export default function ArticleCard({ article }: { article: ArticleWithCategory 
 
   return (
     <Link
-      href={`/news/${article.slug}`}
+      href={`${categorySlug === "policies" ? "/policies" : "/news"}/${article.slug}`}
       className="group flex flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       {/* Card image — 200px height, 16:9-ish */}
@@ -59,7 +59,7 @@ export default function ArticleCard({ article }: { article: ArticleWithCategory 
         {/* Meta: date + read time */}
         <div className="mt-auto flex items-center justify-between text-xs text-muted">
           <span>{formatDate(article.published_at)}</span>
-          <span>5 phút đọc</span>
+          <span>{estimateReadingTime(article.excerpt)} phút đọc</span>
         </div>
       </div>
     </Link>
