@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* HIEA Brand Colors */
+  /* HIEA Brand Colors — from .pen design system */
   --color-primary: #1A52A3;
-  --color-primary-dark: #143F7A;
+  --color-primary-hover: #143F7A;
   --color-accent: #D4AF37;
-  --color-bg: #FFFFFF;
-  --color-bg-alt: #F3F4F6;
-  --color-text: #1F2937;
-
-  /* Defaults */
-  --color-background: var(--color-bg);
-  --color-foreground: var(--color-text);
+  --color-accent-hover: #BF9B30;
+  --color-background: #FFFFFF;
+  --color-surface: #F3F4F6;
+  --color-foreground: #1F2937;
+  --color-muted: #6B7280;
+  --color-border: #E5E7EB;
+  --color-destructive: #EF4444;
+  --color-footer-bg: #1F2937;
+  --color-hero-bg: #EFF6FF;
+  --color-policy-tag: #0F3460;
 
   /* Fonts */
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

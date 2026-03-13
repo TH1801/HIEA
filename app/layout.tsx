@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
 });
 
 const geistMono = Geist_Mono({
@@ -14,11 +14,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "HIEA - Hiệp hội Xuất Nhập khẩu TP.HCM",
+    default: "HIEA - Hiệp hội Xuất Nhập khẩu TP. Hồ Chí Minh",
     template: "%s | HIEA",
   },
   description:
-    "Trang thông tin chính thức của Hiệp hội Doanh nghiệp Xuất Nhập khẩu TP.HCM",
+    "Trang thông tin chính thức của Hiệp hội Xuất Nhập khẩu TP. Hồ Chí Minh — Thúc đẩy hợp tác thương mại quốc tế từ năm 1975.",
+  openGraph: {
+    locale: "vi_VN",
+    type: "website",
+    siteName: "HIEA",
+  },
 };
 
 export default function RootLayout({
@@ -28,9 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
