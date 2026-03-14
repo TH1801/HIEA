@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
 /**
- * Protected admin layout — wraps authenticated admin pages with sidebar.
+ * Protected admin layout — sidebar + main content area.
  * Redirects to login if no session.
  */
 export default async function ProtectedAdminLayout({
@@ -18,9 +18,9 @@ export default async function ProtectedAdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen flex-col lg:flex-row">
       <AdminSidebar currentUser={currentUser} />
-      <main className="flex-1 bg-bg-alt p-6">{children}</main>
+      <main className="flex-1 bg-white">{children}</main>
     </div>
   );
 }
