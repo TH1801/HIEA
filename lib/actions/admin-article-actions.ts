@@ -24,7 +24,8 @@ export async function publishArticle(articleId: string): Promise<string | null> 
 
   revalidatePath("/admin/dashboard");
   revalidatePath("/");
-  revalidatePath("/tin-tuc");
+  revalidatePath("/news");
+  revalidatePath("/policies");
   return null;
 }
 
@@ -48,14 +49,15 @@ export async function rejectArticle(articleId: string): Promise<string | null> {
   return null;
 }
 
-/** Delete article — draft only, by author or admin. */
+/** Delete article — admin can delete any, editor can delete own drafts. */
 export async function deleteArticle(articleId: string): Promise<string | null> {
   const user = await getCurrentUser();
   if (!user) return "Vui lòng đăng nhập.";
 
   const supabase = await createClient();
+  const isAdmin = user.profile.role === "admin";
 
-  // Verify article is draft and user has permission
+  // Verify article exists and user has permission
   const { data: article } = await supabase
     .from("articles")
     .select("status, author_id")
@@ -63,22 +65,29 @@ export async function deleteArticle(articleId: string): Promise<string | null> {
     .single();
 
   if (!article) return "Không tìm thấy bài viết.";
-  if (article.status !== "draft") return "Chỉ xóa được bài viết bản nháp.";
-  if (user.profile.role !== "admin" && article.author_id !== user.id) {
-    return "Bạn không có quyền xóa bài viết này.";
+
+  // Editors can only delete their own drafts
+  if (!isAdmin) {
+    if (article.status !== "draft") return "Chỉ xóa được bài viết bản nháp.";
+    if (article.author_id !== user.id) return "Bạn không có quyền xóa bài viết này.";
   }
 
-  // Atomic delete with status guard to prevent TOCTOU race
+  const wasPublished = article.status === "published";
+
   const { error, count } = await supabase
     .from("articles")
     .delete({ count: "exact" })
-    .eq("id", articleId)
-    .eq("status", "draft");
+    .eq("id", articleId);
 
   if (error) return "Lỗi khi xóa bài viết.";
-  if (count === 0) return "Bài viết đã thay đổi trạng thái, không thể xóa.";
+  if (count === 0) return "Không thể xóa bài viết.";
 
   revalidatePath("/admin/dashboard");
+  if (wasPublished) {
+    revalidatePath("/");
+    revalidatePath("/news");
+    revalidatePath("/policies");
+  }
   return null;
 }
 

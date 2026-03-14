@@ -53,10 +53,14 @@ export async function getArticleCounts(
   return counts;
 }
 
-/** Get paginated articles for admin. Admin sees all, editor sees own. */
+/**
+ * Get paginated articles for admin panel.
+ * Both admin and editor see ALL articles (editors need published articles for reference).
+ * Action permissions are enforced in ArticleActionButtons, not here.
+ */
 export async function getAdminArticles(
-  userId: string,
-  role: "editor" | "admin",
+  _userId: string,
+  _role: "editor" | "admin",
   options: {
     status?: "draft" | "pending" | "published";
     page?: number;
@@ -75,10 +79,6 @@ export async function getAdminArticles(
 
   if (status) {
     query = query.eq("status", status);
-  }
-
-  if (role === "editor") {
-    query = query.eq("author_id", userId);
   }
 
   const { data, count } = await query;

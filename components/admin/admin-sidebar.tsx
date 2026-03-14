@@ -50,7 +50,7 @@ export function AdminSidebar({ currentUser }: { currentUser: CurrentUser }) {
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           <Image
-            src="/images/LOGO_header_36.png"
+            src="/logo-hiea.png"
             alt="HIEA"
             width={32}
             height={32}
@@ -100,7 +100,7 @@ export function AdminSidebar({ currentUser }: { currentUser: CurrentUser }) {
           {/* Logo */}
           <div className="flex items-center gap-2.5 px-5">
             <Image
-              src="/images/LOGO_header_36.png"
+              src="/logo-hiea.png"
               alt="HIEA"
               width={36}
               height={36}

@@ -44,7 +44,7 @@ export default async function DashboardPage({
           Quản lý Bài viết
         </h1>
         <Link
-          href="/admin/editor"
+          href="/admin/articles/new"
           className="flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-white hover:bg-primary-hover"
         >
           + Tạo bài viết mới

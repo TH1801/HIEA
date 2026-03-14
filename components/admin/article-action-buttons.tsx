@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { type AdminArticle } from "@/lib/queries/admin-article-queries";
 import {
@@ -27,8 +28,7 @@ export function ArticleActionButtons({
   const isAdmin = userRole === "admin";
   const isOwner = article.author_id === userId;
   const canEdit = isAdmin || isOwner;
-  const canDelete =
-    article.status === "draft" && (isAdmin || isOwner);
+  const canDelete = isAdmin || (isOwner && article.status === "draft");
   const canApprove = isAdmin && article.status === "pending";
   const canReject = isAdmin && article.status === "pending";
 
@@ -48,9 +48,12 @@ export function ArticleActionButtons({
   return (
     <div className={`flex items-center gap-3 ${isPending ? "opacity-50" : ""}`}>
       {canEdit && (
-        <button className="text-[13px] font-medium text-primary hover:underline">
+        <Link
+          href={`/admin/articles/${article.id}/edit`}
+          className="text-[13px] font-medium text-primary hover:underline"
+        >
           Sửa
-        </button>
+        </Link>
       )}
       {canApprove && (
         <button
@@ -81,7 +84,7 @@ export function ArticleActionButtons({
       )}
       {article.status === "published" && article.slug && (
         <a
-          href={`/tin-tuc/${article.slug}`}
+          href={`${article.category?.slug === "policies" ? "/policies" : "/news"}/${article.slug}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[13px] font-medium text-muted hover:text-foreground"

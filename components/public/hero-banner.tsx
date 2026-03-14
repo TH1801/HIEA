@@ -22,7 +22,7 @@ export default function HeroBanner({ article }: { article: ArticleWithCategory |
             {article.excerpt}
           </p>
           <Link
-            href={`/news/${article.slug}`}
+            href={`${article.category?.slug === "policies" ? "/policies" : "/news"}/${article.slug}`}
             className="flex h-11 w-fit items-center rounded-md bg-primary px-6 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             Xem thêm →
