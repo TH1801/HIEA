@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ArticleWithCategory } from "@/lib/queries/article-queries";
 import ArticleCard from "@/components/public/article-card";
 import PaginationControls from "@/components/public/pagination-controls";
+import EmptyStateContent from "@/components/public/empty-state-content";
 
 type BreadcrumbItem = { label: string; href?: string };
 
@@ -74,24 +75,7 @@ export default function ArticleListPage({
             </div>
           </>
         ) : (
-          /* Empty state */
-          <div className="flex flex-col items-center gap-4 py-20 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-surface text-4xl text-muted">
-              📄
-            </div>
-            <h3 className="text-lg font-semibold text-foreground">
-              Chưa có bài viết nào
-            </h3>
-            <p className="text-sm text-muted">
-              Nội dung sẽ được cập nhật sớm.
-            </p>
-            <Link
-              href="/"
-              className="mt-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
-            >
-              Về Trang chủ
-            </Link>
-          </div>
+          <EmptyStateContent />
         )}
       </div>
     </div>
