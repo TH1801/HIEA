@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ArticleWithCategory } from "@/lib/queries/article-queries";
-import { formatDate } from "@/lib/utils/format-date";
 
 /** Full-width hero with featured article: text-left (60%) + image-right (40%) on desktop */
 export default function HeroBanner({ article }: { article: ArticleWithCategory | null }) {

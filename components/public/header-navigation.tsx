@@ -20,7 +20,7 @@ export default function HeaderNavigation() {
       {/* Desktop header — 72px */}
       <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-12 max-lg:hidden">
         <LeftGroup />
-        <nav className="flex items-center gap-8">
+        <nav aria-label="Điều hướng chính" className="flex items-center gap-8">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -40,7 +40,7 @@ export default function HeaderNavigation() {
           <Image src="/logo-hiea.png" alt="HIEA" width={36} height={36} className="rounded-md" />
           <span className="text-lg font-bold text-primary">HIEA</span>
         </div>
-        <nav className="flex items-center gap-6">
+        <nav aria-label="Điều hướng chính" className="flex items-center gap-6">
           <Link href="/" className="text-sm font-medium text-foreground hover:text-primary">Trang chủ</Link>
           <Link href="/news" className="text-sm font-medium text-foreground hover:text-primary">Tin tức</Link>
           <Link href="/policies" className="text-sm font-medium text-foreground hover:text-primary">Chính sách</Link>
@@ -66,7 +66,7 @@ export default function HeaderNavigation() {
 
       {/* Mobile/Tablet slide-down menu */}
       {mobileMenuOpen && (
-        <nav className="border-t border-border bg-background px-6 py-4 lg:hidden">
+        <nav aria-label="Menu di động" className="border-t border-border bg-background px-6 py-4 lg:hidden">
           <ul className="flex flex-col gap-3">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>

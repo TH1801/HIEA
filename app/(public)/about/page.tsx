@@ -33,7 +33,7 @@ export default function AboutPage() {
     <>
       {/* Hero Section — blue overlay on background image */}
       <section className="flex flex-col items-center justify-center gap-4 bg-primary/60 bg-[url('https://images.unsplash.com/photo-1705253920175-8df4e2408113?w=1200&q=80')] bg-cover bg-center bg-blend-multiply px-12 py-20 text-center max-lg:px-6 max-md:px-4 max-md:py-14">
-        <nav className="text-sm text-white/70">
+        <nav aria-label="Breadcrumb" className="text-sm text-white/70">
           <Link href="/" className="hover:text-white">Trang chủ</Link>
           <span className="mx-2">→</span>
           <span className="text-white">Giới thiệu</span>

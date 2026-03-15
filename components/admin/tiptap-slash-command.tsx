@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import type { Editor } from "@tiptap/react";
 import {
   Heading1, Heading2, Heading3, List, ListOrdered,
-  Quote, Code, Minus, Image,
+  Quote, Code, Minus, Image as ImageIcon,
 } from "lucide-react";
 
 interface SlashMenuItem {
@@ -22,12 +22,12 @@ const SLASH_ITEMS: SlashMenuItem[] = [
   {
     label: "Heading 2",
     icon: <Heading2 size={18} />,
-    action: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
+    action: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
   },
   {
     label: "Heading 3",
     icon: <Heading3 size={18} />,
-    action: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
+    action: (e) => e.chain().focus().toggleHeading({ level: 4 }).run(),
   },
   {
     label: "Bullet List",
@@ -56,7 +56,7 @@ const SLASH_ITEMS: SlashMenuItem[] = [
   },
   {
     label: "Image",
-    icon: <Image size={18} />,
+    icon: <ImageIcon size={18} />,
     action: (e) => {
       const url = window.prompt("Image URL:");
       if (url) e.chain().focus().setImage({ src: url }).run();
@@ -84,14 +84,14 @@ export function TiptapSlashCommand({ editor }: TiptapSlashCommandProps) {
   const openRef = useRef(false);
   const filterRef = useRef(filter);
   const selectedIndexRef = useRef(selectedIndex);
-  filterRef.current = filter;
-  selectedIndexRef.current = selectedIndex;
+  useEffect(() => { filterRef.current = filter; }, [filter]);
+  useEffect(() => { selectedIndexRef.current = selectedIndex; }, [selectedIndex]);
 
   const filtered = SLASH_ITEMS.filter((item) =>
     item.label.toLowerCase().includes(filter.toLowerCase())
   );
   const filteredRef = useRef(filtered);
-  filteredRef.current = filtered;
+  useEffect(() => { filteredRef.current = filtered; }, [filtered]);
 
   const close = useCallback(() => {
     openRef.current = false; // sync ref immediately to prevent Enter interception

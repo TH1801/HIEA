@@ -60,10 +60,10 @@ export function TiptapEditor({
 
   // Refs for latest values — avoids stale closures in debounced auto-save
   const titleRef = useRef(title);
-  titleRef.current = title;
   const categoryIdRef = useRef(categoryId);
-  categoryIdRef.current = categoryId;
   const doSaveRef = useRef<(() => Promise<void>) | null>(null);
+  useEffect(() => { titleRef.current = title; }, [title]);
+  useEffect(() => { categoryIdRef.current = categoryId; }, [categoryId]);
 
   const isPublished = status === "published";
 
@@ -110,7 +110,7 @@ export function TiptapEditor({
       setSaveStatus("saved");
     }
   }, [editor, articleId, isPublished]);
-  doSaveRef.current = doSave;
+  useEffect(() => { doSaveRef.current = doSave; }, [doSave]);
 
   // Sync editor editability when status changes (e.g. after inline publish)
   useEffect(() => {

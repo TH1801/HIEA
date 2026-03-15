@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Phone, Mail, ChevronDown, CheckCircle, ExternalLink } from "lucide-react";
 
@@ -35,7 +36,7 @@ export default function ContactPage() {
       {/* Hero Section — dark overlay with contact cards overlapping */}
       <section className="relative">
         <div className="flex flex-col items-center justify-center gap-3 bg-primary/70 bg-[url('https://images.unsplash.com/photo-1605459799855-ed078d2fefb4?w=1200&q=80')] bg-cover bg-center bg-blend-multiply px-12 py-20 text-center max-lg:px-6 max-md:px-4 max-md:py-14">
-          <nav className="text-sm text-white/70">
+          <nav aria-label="Breadcrumb" className="text-sm text-white/70">
             <Link href="/" className="hover:text-white">Trang chủ</Link>
             <span className="mx-2">→</span>
             <span className="text-white">Liên hệ</span>
@@ -106,9 +107,8 @@ export default function ContactPage() {
             </div>
           </div>
           {/* Decorative image — hidden on mobile/tablet */}
-          <div className="hidden overflow-hidden rounded-lg lg:block lg:w-[480px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://images.unsplash.com/photo-1742810242385-35df57c954b0?w=600&q=80" alt="Hội viên HIEA" className="h-[400px] w-full object-cover" />
+          <div className="relative hidden overflow-hidden rounded-lg lg:block lg:h-[400px] lg:w-[480px]">
+            <Image src="https://images.unsplash.com/photo-1742810242385-35df57c954b0?w=600&q=80" alt="Hội viên HIEA" fill className="object-cover" sizes="480px" />
           </div>
         </div>
       </section>

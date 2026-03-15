@@ -32,7 +32,7 @@ export default function ArticleListPage({
       <div className="bg-hero-bg py-12 max-md:py-8">
         <div className="mx-auto max-w-[1440px] px-12 max-lg:px-6 max-md:px-4">
           {/* Breadcrumb */}
-          <nav className="mb-4 text-sm text-muted">
+          <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted">
             {breadcrumbItems.map((item, idx) => (
               <span key={idx}>
                 {idx > 0 && <span className="mx-2">→</span>}

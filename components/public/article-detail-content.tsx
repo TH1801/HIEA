@@ -39,7 +39,7 @@ export default function ArticleDetailContent({
     <article>
       {/* Breadcrumb + header — max-width 800px */}
       <div className="mx-auto max-w-[800px] px-6 pt-8 max-md:px-4">
-        <nav className="mb-6 text-sm text-muted">
+        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted">
           {breadcrumbItems.map((item, idx) => (
             <span key={idx}>
               {idx > 0 && <span className="mx-2">→</span>}
