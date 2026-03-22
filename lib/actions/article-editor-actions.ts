@@ -67,7 +67,14 @@ export async function updateArticle(
     updateData.title = payload.title;
     updateData.slug = slugify(payload.title);
   }
-  if (payload.content !== undefined) updateData.content = payload.content;
+  if (payload.content !== undefined) {
+    updateData.content = payload.content;
+    // DEBUG: Check if content contains image nodes before saving
+    const json = JSON.stringify(payload.content);
+    if (json.includes('"type":"image"') || json.includes('"type": "image"')) {
+      console.log(`[updateArticle] Saving content with image nodes for article ${articleId}`);
+    }
+  }
   if (payload.category_id !== undefined) updateData.category_id = payload.category_id;
 
   const { data: updated, error } = await supabase
@@ -143,6 +150,43 @@ export async function uploadAttachment(
   const { data: urlData } = supabase.storage
     .from("attachments")
     .getPublicUrl(path);
+
+  return { url: urlData.publicUrl, error: null };
+}
+
+/** Upload editor image to Supabase Storage, return public URL */
+export async function uploadEditorImage(
+  formData: FormData
+): Promise<{ url: string | null; error: string | null }> {
+  const user = await getCurrentUser();
+  if (!user) return { url: null, error: "Vui lòng đăng nhập." };
+
+  const file = formData.get("file") as File | null;
+  if (!file) return { url: null, error: "Không tìm thấy tệp." };
+
+  const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+  const allowedExts = ["png", "jpg", "jpeg", "webp"];
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  if (!allowedTypes.includes(file.type) || !allowedExts.includes(ext)) {
+    return { url: null, error: "Chỉ chấp nhận ảnh PNG, JPG, JPEG, WEBP." };
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    return { url: null, error: "Ảnh quá lớn (tối đa 2MB)." };
+  }
+
+  const supabase = await createClient();
+  const storagePath = `editor-images/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("attachments")
+    .upload(storagePath, file, { contentType: file.type });
+
+  if (error) return { url: null, error: "Lỗi khi tải ảnh lên." };
+
+  const { data: urlData } = supabase.storage
+    .from("attachments")
+    .getPublicUrl(storagePath);
 
   return { url: urlData.publicUrl, error: null };
 }

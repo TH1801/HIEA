@@ -1,6 +1,6 @@
 import { generateHTML } from "@tiptap/html";
 import type { JSONContent } from "@tiptap/core";
-import { editorExtensions } from "./editor-extensions";
+import { renderExtensions } from "./editor-extensions";
 
 /** Convert TipTap JSON content to HTML string (server-side only) */
 export function renderTiptapHtml(
@@ -8,8 +8,28 @@ export function renderTiptapHtml(
 ): string {
   if (!content) return "";
   try {
-    return generateHTML(content as JSONContent, editorExtensions);
-  } catch {
+    // DEBUG: Check if content JSON contains image nodes
+    const json = JSON.stringify(content);
+    const hasImageNodes = json.includes('"type":"image"') || json.includes('"type": "image"');
+    if (hasImageNodes) {
+      console.log("[renderTiptapHtml] Content contains image nodes");
+    }
+
+    const html = generateHTML(content as JSONContent, renderExtensions);
+
+    // DEBUG: Check if generated HTML contains img tags
+    if (hasImageNodes) {
+      const hasImgTags = html.includes("<img");
+      console.log(`[renderTiptapHtml] Generated HTML contains <img>: ${hasImgTags}`);
+      if (!hasImgTags) {
+        console.log("[renderTiptapHtml] WARNING: Image nodes in JSON but no <img> in HTML!");
+        console.log("[renderTiptapHtml] Extensions count:", renderExtensions.length);
+      }
+    }
+
+    return html;
+  } catch (err) {
+    console.error("[renderTiptapHtml] Error:", err);
     return "<p>Nội dung không khả dụng.</p>";
   }
 }

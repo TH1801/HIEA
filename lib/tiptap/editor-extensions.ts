@@ -6,18 +6,26 @@ import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 
 /**
- * Shared TipTap extensions used by both editor (Phase 7) and renderer.
+ * Base extensions shared by editor and server-side renderer.
  * StarterKit includes: headings, bold, italic, lists, code block, blockquote, etc.
  */
-export const editorExtensions = [
+const baseExtensions = [
   StarterKit.configure({
     heading: { levels: [2, 3] },
   }),
-  Image,
+  Image.configure({}),
   Link.configure({ openOnClick: false }),
-  Placeholder.configure({
-    placeholder: "Bắt đầu viết nội dung...",
-  }),
   Highlight,
   Underline,
 ];
+
+/** Full editor extensions — base + editor-only Placeholder */
+export const editorExtensions = [
+  ...baseExtensions,
+  Placeholder.configure({
+    placeholder: "Bắt đầu viết nội dung...",
+  }),
+];
+
+/** Extensions for server-side HTML rendering (no editor-only Placeholder) */
+export const renderExtensions = baseExtensions;

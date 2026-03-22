@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import type { Editor } from "@tiptap/react";
 import {
   Heading1, Heading2, Heading3, List, ListOrdered,
-  Quote, Code, Minus, Image as ImageIcon,
+  Quote, Code, Minus, Image as ImageIcon, Link2,
 } from "lucide-react";
+import { uploadEditorImage } from "@/lib/actions/article-editor-actions";
 
 interface SlashMenuItem {
   label: string;
@@ -13,7 +14,9 @@ interface SlashMenuItem {
   action: (editor: Editor) => void;
 }
 
-const SLASH_ITEMS: SlashMenuItem[] = [
+const UPLOAD_PLACEHOLDER = "Đang tải ảnh...";
+
+const BASE_SLASH_ITEMS: SlashMenuItem[] = [
   {
     label: "Heading 1",
     icon: <Heading1 size={18} />,
@@ -27,7 +30,7 @@ const SLASH_ITEMS: SlashMenuItem[] = [
   {
     label: "Heading 3",
     icon: <Heading3 size={18} />,
-    action: (e) => e.chain().focus().toggleHeading({ level: 4 }).run(),
+    action: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
   },
   {
     label: "Bullet List",
@@ -54,14 +57,6 @@ const SLASH_ITEMS: SlashMenuItem[] = [
     icon: <Minus size={18} />,
     action: (e) => e.chain().focus().setHorizontalRule().run(),
   },
-  {
-    label: "Image",
-    icon: <ImageIcon size={18} />,
-    action: (e) => {
-      const url = window.prompt("Image URL:");
-      if (url) e.chain().focus().setImage({ src: url }).run();
-    },
-  },
 ];
 
 interface TiptapSlashCommandProps {
@@ -77,6 +72,7 @@ export function TiptapSlashCommand({ editor }: TiptapSlashCommandProps) {
   const [filter, setFilter] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use refs to avoid stale closure in keydown handler
   // IMPORTANT: openRef is updated synchronously in show/close helpers, NOT during render,
@@ -87,7 +83,67 @@ export function TiptapSlashCommand({ editor }: TiptapSlashCommandProps) {
   useEffect(() => { filterRef.current = filter; }, [filter]);
   useEffect(() => { selectedIndexRef.current = selectedIndex; }, [selectedIndex]);
 
-  const filtered = SLASH_ITEMS.filter((item) =>
+  // Handle image file upload: insert placeholder → upload → replace with image
+  const handleImageUpload = useCallback(async (file: File) => {
+    editor.chain().focus().insertContent(UPLOAD_PLACEHOLDER).run();
+
+    const formData = new FormData();
+    formData.append("file", file);
+    const { url, error } = await uploadEditorImage(formData);
+
+    // Find and remove placeholder from editor
+    const { doc } = editor.state;
+    let from = -1;
+    let to = -1;
+    doc.descendants((node, pos) => {
+      if (from >= 0) return false;
+      if (node.isText && node.text?.includes(UPLOAD_PLACEHOLDER)) {
+        const idx = node.text.indexOf(UPLOAD_PLACEHOLDER);
+        from = pos + idx;
+        to = from + UPLOAD_PLACEHOLDER.length;
+        return false;
+      }
+    });
+    if (from >= 0) {
+      editor.chain().deleteRange({ from, to }).run();
+    }
+
+    if (error || !url) {
+      alert(error || "Lỗi khi tải ảnh lên.");
+      return;
+    }
+    editor.chain().focus().setImage({ src: url }).run();
+  }, [editor]);
+
+  // Extend base items with image upload and image URL commands
+  const slashItems = useMemo<SlashMenuItem[]>(() => [
+    ...BASE_SLASH_ITEMS,
+    {
+      label: "Upload Image",
+      icon: <ImageIcon size={18} />,
+      action: () => fileInputRef.current?.click(),
+    },
+    {
+      label: "Image URL",
+      icon: <Link2 size={18} />,
+      action: (e) => {
+        const url = window.prompt("Nhập URL ảnh:");
+        if (!url) return;
+        try {
+          const parsed = new URL(url);
+          if (!["http:", "https:"].includes(parsed.protocol)) {
+            alert("URL không hợp lệ. Chỉ chấp nhận http/https.");
+            return;
+          }
+          e.chain().focus().setImage({ src: url }).run();
+        } catch {
+          alert("URL không hợp lệ.");
+        }
+      },
+    },
+  ], []);
+
+  const filtered = slashItems.filter((item) =>
     item.label.toLowerCase().includes(filter.toLowerCase())
   );
   const filteredRef = useRef(filtered);
@@ -182,26 +238,39 @@ export function TiptapSlashCommand({ editor }: TiptapSlashCommandProps) {
     };
   }, [editor, close]);
 
-  if (!open || filtered.length === 0) return null;
-
   return (
-    <div
-      className="fixed z-50 w-56 rounded-lg border border-border bg-white py-1 shadow-lg"
-      style={{ top: coords.top, left: coords.left }}
-    >
-      {filtered.map((item, i) => (
-        <button
-          key={item.label}
-          type="button"
-          onMouseDown={(e) => { e.preventDefault(); executeItem(item); }}
-          className={`flex w-full items-center gap-3 px-3 py-2 text-sm ${
-            i === selectedIndex ? "bg-surface text-primary" : "text-foreground hover:bg-surface"
-          }`}
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".png,.jpg,.jpeg,.webp"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleImageUpload(file);
+          e.target.value = "";
+        }}
+      />
+      {open && filtered.length > 0 && (
+        <div
+          className="fixed z-50 w-56 rounded-lg border border-border bg-white py-1 shadow-lg"
+          style={{ top: coords.top, left: coords.left }}
         >
-          <span className="text-muted-foreground">{item.icon}</span>
-          {item.label}
-        </button>
-      ))}
-    </div>
+          {filtered.map((item, i) => (
+            <button
+              key={item.label}
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); executeItem(item); }}
+              className={`flex w-full items-center gap-3 px-3 py-2 text-sm ${
+                i === selectedIndex ? "bg-surface text-primary" : "text-foreground hover:bg-surface"
+              }`}
+            >
+              <span className="text-muted-foreground">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
